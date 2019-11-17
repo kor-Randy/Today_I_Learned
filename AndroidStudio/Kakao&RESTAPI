@@ -1,0 +1,25 @@
+
+ *  Android 와 KakaoTalk 로그인 연동은 이전에는 AWS ec2를 사용하여 API를 사용했었다.
+
+* 하지만 더 검색해보니 Android자체에서 Native하게 사용하는 편이 더 간단하다고 하여 구글링을 해가며 시도해보았다.
++ 결국 KakaoTalk 로그인과 이전에 작업해놓은 Facebook Login, Google Login 모두 쓸 수 있게 되었다.
+
+* 또한 KakaoLink를 사용하여 카카오톡 친구들에게 메세지를 보낼 수 있게 되었다.
+- 이를 사용하는 방법과 FCM(Push Notification)을 사용하는 방법 두가지로 알림을 보낼 수 있게 되었다.
+
+REST API는 기본적으로 HTTP URI 형식으로 통신된다.
+
+특징
+1. Server-Client 구조
+* Lambda를 이용하여 GateAPI를 만들면 ServerLess인데 이것은 AWS가 Server를 대신 실행시켜줌 때문인가?
+
+2.각각의 요청을 별개로 본다. 
+* 단지 요청에 대한 응답만 해준다.
+
+이 외적으로 REST API의 설계 규칙도 있는데 이부분은 BackEnd의 부분인 것 같다.
+
+* 또한 REST API의 요청과 응답의 Data는 Json 형식으로 송수신되는 것 같다.
+- 이를 시도하며 REST API라는 기법을 조금 더 알게되었으며 이후 시간이 날 때 REST API를 더 공부해 볼 것이다.
+
++ REST API를 공부하여 다음 App을 개발하게 될 때 다양한 Open API를 사용해봐야겠다.
+- 또한 Kakao Open API도 더 시도해 볼것이다.
