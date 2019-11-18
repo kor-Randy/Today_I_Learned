@@ -1,0 +1,63 @@
+#RESTful API
+
++안드로이드에서 REST API를 호출하는 방법
+1.
+-인터넷 접속 활성솨
+<uses-permission android:name="android.permission.INTERNET" />
+
+2.
+-백그라운드 스레드 생성 안드로이드에서 메인 Thread는 인터넷 접속이 불가하다.
+AsyncTask.execute(new Runnable() {
+    @Override
+    public void run() {
+        // All your networking logic
+        // should be here
+    }
+});
+
+3.
+-HTTP 연결 생성
+URL의 openConnection()을 사용하여 REST Endpoint에 대한 연결도 설정 가능.
+// Create URL
+URL githubEndpoint = new URL("https://api.github.com/");
+ 
+// Create connection
+HttpsURLConnection myConnection =
+        (HttpsURLConnection) githubEndpoint.openConnection();
+        
+4.
+-요청 헤더 추가
+REST API는 대부분 앱에 고유한 식별자를 요구한다.
+myConnection.setRequestProperty("User-Agent", "my-rest-app-v0.1");
+//User-Agent 헤더를 my-rest-app-v0.1 로 설정한다(여러번 쓰며 설정 가능)
+
+5.
+-응답 읽기
+HttpURLConnection.getResponseCode()를 통해 응답코드를 확인한다.
+f (myConnection.getResponseCode() == 200) {
+    // Success
+    // Further processing here
+} else {
+    // Error handling code goes here
+}
+
+6.
+-응답 확인
+InputStream responseBody = myConnection.getInputStream()
+//입력 스트림 가져옴
+InputStreamReader responseBodyReader = 
+        new InputStreamReader(responseBody, "UTF-8");
+//JSON형식의 파일을 읽기 위함
+
+7.
+-응답 파싱
+
+
+8.
+-객체들 연결 닫기
+myConnection.disconnect();
+
++myConnection.setRequestMethod("POST")를 사용하여 GET방식이 아닌 다른 방식으로도 접근 가능
+
+
+
