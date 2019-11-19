@@ -1,0 +1,31 @@
+오늘은 웹프로그래밍 텀 프로젝트를 할 때 내가 쓰는 MongoDB와 Express.js를 사용하여 노드 서버를 만들어 구현해봤다.
+
+이전에 구현은 해놨지만 노드가 어떤식으로 사용되는지 서버가 무엇인지 정확히 몰랐다.
+
+노드 : JavaScript 기반이다
+
+그 노드는 어떠한 서버에서 실행되는데 그 서버에 존재하는 Data들을 CRUD할 수 있는 API를 제공해준다.
+
+helloworld.js
+
+var http = require('http');
+var server = http.createServer();
+
+server.on('request',function(req,res)
+{
+  res.writeHead(200,{'Content-Type' : 'text/plain'});
+  res.end('Hello World\n');
+}).listen(3000);
+console.log('Server running at http://localhost:3000/');
+
+http서버를 구성하는 코드이다.
+서버가 정상적으로 열리면 Server running at http://localhost:3000 라는 문구가 console창에 출력되고
+
+http가 정삭적으로 불려오면 Hello World 라는 문구가 적힌 웹 사이트가 열리게 된다.
+
+내가 쓰는 MongoDB를 http서버에서 접근하여 쓰고싶은 Route를 생성한다.(여기서 Route는 함수?와 같은 역할을 한다.)
+http서버에서의 api의 endpoint에 GET, POST... 방식으로 접근하는 것마다 그에 상응하는 Router를 실행?시켜 Data를 반환해준다.
+
+아직 백엔드쪽의 공부가 부족함을 느끼고 Web서버와 백엔드 쪽의 공부를 진행해야겠다.
+
+
