@@ -1,0 +1,42 @@
+학교에서의 산학프로젝트에서 App과 AWS를 이용하여 개발하는 과정에서 RESTful API가 아닌 처음으로 GraphQL을 사용했다.
+
+이유는 AWS의 기능을 최대한 많이 사용해보고자 하는 생각이 들었기 때문이다.
+
+AWS의 Amplify를 통해 AppSync를 쉽게 연동할 수 있었다.
+
+ServerLess로 Lambda와 DynamoDB를 연동하는 것은 생각보다 쉬웠지만 처음 써보는 GraphQL을 사용해는 것은 생소해서 어려웠다.
+
+GraphQL를 사용하는 것은 Schema를 변경하여 @model의 Data 구조를 변경가능한데 이때
+type Date @model
+{
+
+	id : ID!
+	date : [String]!
+
+}
+이런식으로 Schema를 설정한 후 Cli를 사용하여 'amplify push'를 입력하면 자동으로 AWS의 DynamoDB에 Table이 생성된다.
+
+이때 Type이 []로 설정된 Field는 리스트로 저장된다.
+
+이 Field를 List로 받아올 때 (mutable)List로 받아오는데 mutable이기 때문에 List.add(~)를 입력하여 List를 변경하려 했으나
+
+ArrayList<String> = 받아온 List 를 사용했을 때는
+java.util.Collections$UnmodifiableRandomAccessList cannot be cast to java.util.ArrayList 오류가 났고
+
+이를 해결하기 위해 ArrayList로 치환하지 않고 그대로 사용하려했다.
+
+그때는 Unsuported 에러가 났다.
+
+이를 해결하는 데 힘들었지만
+var listt = response.data()!!.date!!.date() // DynamoDB에서 받아오기
+Log.d("wlgusdn111",listt.toString()) 
+
+listt=ArrayList(listt) // List를 ArrayList형태로 생성하는데 그 원소들은 받아온 listt 
+
+listt.add("1") // 원소를 더한다
+
+Collection으로 치환후 List로 치환 후 ArrayList까지 3중 치환까지 해봤지만 다 안됐다.
+
+고생한 것에 비해 굉장히 쉬운 방법으로 해결됐다.
+
+
