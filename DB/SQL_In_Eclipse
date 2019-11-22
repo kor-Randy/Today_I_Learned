@@ -1,0 +1,28 @@
+Exception in thread "main" java.sql.SQLDataException: Cannot determine value type from string 'Borg'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:114)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:97)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:63)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:73)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:96)
+	at com.mysql.cj.jdbc.result.ResultSetImpl.getObject(ResultSetImpl.java:1382)
+	at com.mysql.cj.jdbc.result.ResultSetImpl.getDouble(ResultSetImpl.java:764)
+	at homework.main(homework.java:99)
+Caused by: com.mysql.cj.exceptions.DataConversionException: Cannot determine value type from string 'Borg'
+	at com.mysql.cj.result.AbstractNumericValueFactory.createFromBytes(AbstractNumericValueFactory.java:66)
+	at com.mysql.cj.protocol.a.MysqlTextValueDecoder.decodeByteArray(MysqlTextValueDecoder.java:132)
+	at com.mysql.cj.protocol.result.AbstractResultsetRow.decodeAndCreateReturnValue(AbstractResultsetRow.java:133)
+	at com.mysql.cj.protocol.result.AbstractResultsetRow.getValueFromBytes(AbstractResultsetRow.java:241)
+	at com.mysql.cj.protocol.a.result.ByteArrayRow.getValue(ByteArrayRow.java:91)
+	at com.mysql.cj.jdbc.result.ResultSetImpl.getObject(ResultSetImpl.java:1300)
+	... 2 more
+  
+ 
+ 라는 에러가 떳다. 처음에는 내가 sql을 잘못 적었겠거니 join을 잘못 했겠거니 싶었는데
+ 
+ 1시간을 공사치고 나니깐 그제서야 넓게 보이더니 String을 Double에 넣고 있었던 것을 발견했다...
+ 
+ 또한 SQL 에서의 From절 내에 내가 Create한 Table말고도 (select from where....)절로 찾은 table도 들어 갈수 있다는 것을 알았다.
+ 이걸 사용하여 좀더 다양한 쿼리를 구사할 수 있게 되었다.
+ 
+ Join연산을 하면 연산 결과가 머리속에 추상적으로 그려져야 다양한 쿼리를 구사할 수 있을 것이다.
