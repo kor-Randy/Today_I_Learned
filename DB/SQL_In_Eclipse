@@ -26,3 +26,198 @@ Caused by: com.mysql.cj.exceptions.DataConversionException: Cannot determine val
  이걸 사용하여 좀더 다양한 쿼리를 구사할 수 있게 되었다.
  
  Join연산을 하면 연산 결과가 머리속에 추상적으로 그려져야 다양한 쿼리를 구사할 수 있을 것이다.
+ 
+ 아래의 코드는 미리 Mysql을 사용하여 만들어둔 테이블들을 사용하여 아래의 결과값들을 도출해내는 Java 코드이다.
+ 
+ 
+ 
+ Dname Mgr_Lname No_Emps Avg-Salary
+Headquaters Borg 1 55000
+
+------------------------------------------------------------
+
+Name Ssn Address Sex Salary Supervisor
+James Borg 888665555 450 Stone, Houston, TX M 55000 null
+
+------------------------------------------------------------
+
+Dname Mgr_Lname No_Emps Avg-Salary
+Administration Wallace 3 31000
+
+Name Ssn Address Sex Salary Supervisor
+Alicia Zelaya 999887777 3321 Castle, Spring, TX F 25000 Jennifer Wallace
+Jennifer Wallace 987654321 291 Berry, Bellaire, TX F 43000 James Borg
+Ahmad Jabbar 987987987 980 Dallas, Houston, TX M 25000 Jennifer Wallace
+
+------------------------------------------------------------
+
+Dname Mgr_Lname No_Emps Avg-Salary
+Research Wong 4 33250
+
+Name Ssn Address Sex Salary Supervisor
+John Smith 123456789 731 Fondren, Houston, TX M 30000 Franklin Wong
+Franklin Wong 333445555 638 Voss, Houston, TX M 40000 James Borg
+Ramesh Narayn 666884444 975 Fire Oak, Humble, TX M 38000 Franklin Wong
+Joyce English 453453453 5631 Rice, Houston, TX F 25000 Franklin Wong
+ 
+ ------------------------------------------------------------
+ 
+ 
+ 
+ 
+ 
+ 
+import java.sql.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class homework {
+   public static void main(String[] args) throws SQLException, IOException
+   {
+      Connection con = null;
+      Scanner scanner = new Scanner(System.in);
+      try
+      {
+         Class.forName("com.mysql.cj.jdbc.Driver");         
+      }      
+      catch(ClassNotFoundException e)
+      {
+         System.err.println("cannot load driver..");
+         e.printStackTrace();
+      }
+      
+      String dbacct, passwrd, dbname, Ssn, Lname;
+      Double Salary, Sum_Salary;
+      Integer count_Employee;
+      int[] arr = {1,4,5};
+      
+      System.out.println("enter db account:");
+      dbacct= scanner.nextLine();
+      System.out.println("enter pwd:");
+      passwrd= scanner.nextLine();
+      System.out.println("enter db name:");
+      dbname= scanner.nextLine();
+      
+      String url="jdbc:mysql://localhost:3306/"+dbname+"?serverTimezone=UTC&useSSL=false";
+
+      
+      con = DriverManager.getConnection(url, dbacct,passwrd);
+      System.out.println("connection successful");
+      
+      //String stmt_0 = "select Lname, Salary from EMPLOYEE where Ssn=?";
+     // PreparedStatement p = con.prepareStatement(stmt_0);
+      
+     // System.out.println("Enter a ssn:");
+     // Ssn = scanner.nextLine();
+
+      //p.clearParameters();
+      //p.setString(1, Ssn);
+     
+      String stmt_1 = "select count(*),sum(salary) from EMPLOYEE";
+      
+      PreparedStatement p1 = con.prepareStatement(stmt_1);
+      ResultSet r1 = p1.executeQuery();
+      
+     
+      
+      while(r1.next())
+      {
+         count_Employee = r1.getInt(1);
+         System.out.println("Number of employees : "+count_Employee);
+         System.out.println("-------------------------------------------------------------------");
+         Sum_Salary = r1.getDouble(2);
+         System.out.println("Total Salary : $"+Sum_Salary);
+         System.out.println("-------------------------------------------------------------------");
+      }
+      
+      
+      for(int i : arr)
+      {
+    	  
+    	  String r2_dname ;
+          Integer r2_count ;
+          Double r2_avg ;
+          String r2_mgrssn = null ;
+          String r2_mgrname;
+          
+          String r3_name ;
+          
+          String r3_ssn ;
+
+          String r3_add ;
+          String r3_sex;
+          Double r3_sal ;
+          String r3_superssn ;
+    	  
+          String stmt_2 = "select * from (select Dname,count(*),avg(salary) from (EMPLOYEE join DEPARTMENT on Dnumber=Dno) where Dno="+i+" group by Dno) as s natural join (select Dname,Lname from EMPLOYEE join DEPARTMENT on Mgr_ssn=Ssn where Dnumber="+i+")as g";
+    	  //String stmt_2 = "select Dname,Lname,count(*),avg(salary),Mgr_ssn,Dnumber from (DEPARTMENT left outer join EMPLOYEE on Dnumber=Dno) where Dnumber="+i+" and Ssn=Mgr_ssn group by Dname";
+          
+          PreparedStatement p2 = con.prepareStatement(stmt_2);
+          ResultSet r2 = p2.executeQuery();
+          
+       
+         
+          System.out.printf("%20s | %11s | %11s | %11s\n","Dname","No_Emps","Mgr_Ssn","Avg(Salary)");
+          while(r2.next())
+          {
+            r2_dname = r2.getString(1);
+               r2_count = r2.getInt(2);
+               r2_mgrname = r2.getString(3);
+               r2_avg = r2.getDouble(4);
+              
+              
+              
+              System.out.printf("%20s | %11d | %11s | %11f\n",r2_dname,r2_count,r2_mgrname,r2_avg);
+            
+          }
+          System.out.println("--------------------------------------------------------------------");
+          
+          
+          String stmt_3 = "select E.Fname,E.Minit,E.Lname,E.Ssn,E.Address,E.Sex,E.Salary,S.Fname,S.Minit,S.Lname from (EMPLOYEE as E left join EMPLOYEE as S on E.Super_ssn = S.Ssn) where E.Dno="+i;
+          
+          PreparedStatement p3 = con.prepareStatement(stmt_3);
+          ResultSet r3 = p3.executeQuery();
+          System.out.printf("%20s | %11s | %30s | %11s | %11s | %20s\n","Name","Ssn","Address","Sex","Salary","Supervisor");
+          
+          while(r3.next())
+          {
+             r3_name = r3.getString(1)+" "+r3.getString(2)+" "+r3.getString(3);
+             
+            r3_ssn = r3.getString(4);
+             if(r2_mgrssn==r3_ssn)
+             {
+            	 r2_mgrname=r3_name;
+             }
+             r3_add = r3.getString(5);
+              r3_sex = r3.getString(6);
+             r3_sal = r3.getDouble(7);
+              r3_superssn = r3.getString(8)+" "+r3.getString(9)+" "+r3.getString(10);
+             
+             
+              
+             System.out.printf("%20s | %11s | %30s | %11s | %11f | %20s\n",r3_name,r3_ssn,r3_add,r3_sex,r3_sal,r3_superssn);
+             
+            
+          }
+          
+          System.out.println("---------------------------------------------------------------");
+    	  
+      }
+      
+ 
+      
+      
+      try
+      {
+         if(con != null)
+         {
+            con.close();
+         }
+      }
+      catch(SQLException e)
+      {
+         e.printStackTrace();
+      }
+   }
+}
