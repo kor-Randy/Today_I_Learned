@@ -1,0 +1,208 @@
+ForeGround Service는 상태 Bar에 Notification을 등록해서 사용자가 인지할 수 있게 해야 한다.
+->이 점이 Background와의 가장 큰 다른점!
+Foreground는 User가 App이 자원을 차지하고 있다는 것을 인지한다.
+(but 이것이 Foreground인지 Background인지 확실히 판단할 수 없다.
+∵개발자들 마다 판단하는 기준이 매우 다름. A라는 서비스를 "Tom"은 Back에서 실행된다하고, "Alias"는 Fore에서 실행된다 한다)
+
+주로 음악을 실행할 때 주로 사용된다.
+
+상태바에 올라가는 Push Notification의 id는 0이 아니어야 한다.
+
+service는 기본적으로 Main Thread에서 동작한다.
+따라서 다른 반복적인 수행을 원할때는 내부에 Thread를 생성하여 수행해주어야한다.
+
+Override 메소드들은 
+onStartCommand() : ACtivity, fragment가 startService()를 호출하면, 
+서비스는 실행되면(started), 그 서비스를 실행한 컴포넌트가 종료되도 할 일을 모두 마칠 때까지 서비스는 종료되지 않는다. 
+-액티비티 등의 앱 컴포넌트는 startService()를 호출함으로써 서비스를 실행할 수 있고, 
+이때 어떤 서비스를 실행할지에 대한 정보와 그 외에 서비스에 전달해야할 데이터를 담고 있는 인텐트를 인자로 넘길 수 있습니다. 
+그리고 서비스의 onStartCommand() 콜백 메소드에서 매개변수로 그 인텐트를 받게 됩니다.
+
+
+onBind() : startService() 메소드 대신 bindService() 메소드를 통해 시작되는 서비스를 서비스 바인딩 (Service Bind 혹은 Bound Service) 라 한다.
+- 마치 클라이언트-서버 와 같이 동작을 하는데 서비스가 서버 역할을 한다. 
+(액티비티는 서비스에게 어떠한 요청을 할 수 있고, 서비스로부터 요청에 대한 결과를 받을수 있음)
+- 하나의 서비스에 다수의 액티비티 연결 가능하며, 서비스 바인딩은 연결된 액티비티가 사라지면 서비스도 소멸된다. (즉 백그라운드에서 무한히 실행되지는 않음)
+- 클라이언트가 서비스와의 접속을 마치려면 unbindService() 를 호출한다.
+onCreate()
+onDestroy()
+가 있다.
+
+예제 소스코드 : Activity.kt
+...
+ stop = findViewById(R.id.button3)
+        stop!!.setOnClickListener(object: View.OnClickListener {
+            override fun onClick(v: View?) {
+
+                val intent = Intent(this@LobbyActivity,service::class.java)
+
+                stopService(intent)
+
+            }
+        })
+
+        start = findViewById(R.id.button2)
+        start!!.setOnClickListener(object: View.OnClickListener {
+            override fun onClick(v: View?) {
+
+              val intent = Intent(this@LobbyActivity,service::class.java)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+
+                }
+                else
+                {
+                    startService(intent)
+                }
+
+            }
+        })
+        ...
+        
+        
+        
+ Service.kt
+ 
+ package com.example.wlgusdn.mobile
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.IBinder
+import android.util.Log
+import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import com.google.firebase.database.FirebaseDatabase
+
+
+class service : Service()
+{
+    var sem=0
+    var i=0
+    val database = FirebaseDatabase.getInstance().getReference()
+
+    override fun onBind(intent: Intent?): IBinder? {
+
+        return null
+
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return super.onStartCommand(intent, flags, startId)
+
+
+
+    }
+    override fun onCreate() {
+        super.onCreate()
+
+        startForeground()
+    }
+
+    fun startForeground()
+    {
+        Log.d("wlgusdn1","Start")
+        val notificationIntent = Intent(this, LobbyActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+
+        val remoteViews = RemoteViews(packageName, R.layout.notification_service)
+
+        val builder: NotificationCompat.Builder
+        if (Build.VERSION.SDK_INT >= 26) {
+            val CHANNEL_ID = "snwodeer_service_channel"
+            val channel = NotificationChannel(CHANNEL_ID,
+                    "SnowDeer Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT)
+
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                    .createNotificationChannel(channel)
+
+            builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        } else {
+            builder = NotificationCompat.Builder(this)
+        }
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+                .setContent(remoteViews)
+                .setContentIntent(pendingIntent)
+
+        startForeground(1, builder.build())
+
+
+            database.child("service").setValue(i)
+            i += 1
+
+         Thread(Runnable {
+
+            run {
+                while (true) {
+                    database.child("service").setValue(i)
+                    i += 1
+                    Thread.sleep(2000)
+
+                    if(sem==1)
+                        break;
+                }
+            }
+        }).start()
+
+
+
+        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sem=1
+        Log.d("wlgusdn1","des")
+
+    }
+}
+
+
+Notification의 Layout
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical"
+        android:src="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="ㅎㅇㅎㅇ"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="메세지"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>
+
+
+
+
+ 
+ 
