@@ -1,0 +1,137 @@
+안드로이드에서 Realtime DB에 Data를 넣기 위해서는 DatabaseReference 객체에 Listener를 달아줘야한다.
+
+그 Listener는 3가지 종류가 있는데
+
+
+
+1. ChildEventListener	: 리스너를 달아놓은 Reference의 Child 즉, 자식들의 reference에 add/change/remove/move가 발생할 때 각각의 메소드가 불린다.
+- 메소드
+onChildAdded()	: 항목 목록을 검색하거나 항목 목록에 대한 추가를 수신 대기합니다. 
+이 콜백은 기존 하위 항목마다 한 번씩 발생한 후 지정된 경로에 하위 항목이 새로 추가될 때마다 다시 발생합니다.
+리스너에 전달된 DataSnapshot은 새 하위 데이터를 포함합니다.
+
+onChildChanged() :	목록의 항목에 대한 변경을 수신 대기합니다. 
+이 이벤트는 하위 노드가 수정될 때마다 발생합니다. 
+여기에는 하위 노드의 하위에 대한 수정이 포함됩니다. 
+이벤트 리스너에 전달되는 DataSnapshot에는 하위 항목의 업데이트된 데이터가 포함됩니다.
+
+onChildRemoved() :	목록의 항목 삭제를 수신 대기합니다.
+이벤트 콜백에 전달되는 DataSnapshot에는 삭제된 하위 항목의 데이터가 포함됩니다.
+
+onChildMoved() :	순서 있는 목록의 항목 순서 변경을 수신 대기합니다. 
+하위 항목의 재정렬을 야기하는 업데이트에 의해 onChildChanged() 콜백이 호출될 때마다 이 이벤트가 발생합니다. 
+이 이벤트는 orderByChild 또는 orderByValue로 정렬된 데이터에 사용됩니다.
+
+
+2. ValueEventListener : 리스너를 달아놓은 Reference의 Child들의 data들을 지속적으로 받아온다.
+장점 : Data들의 변경을 수시로 확인해야할 때 빠르다 / 코드가 간단하다?
+단점 : Data소모량이 많다 / 쓸데없는 접근들이 많다.
+
+    override fun onDataChange(DataSnapshot dataSnapshot) {
+        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+        
+        //데이터를 받아올때마다 실행되는 함수
+        
+        }
+    }
+
+    override fun onCancelled(DatabaseError databaseError) {
+       
+       
+       
+    }
+    
+3. SingleEventListener : 리스너를 달아놓은 Reference의 Child의 Data들을 '한번' 받아온다.
+Activity/Fragment의 Data들을 초기화할때 사용
+
+Data소모량이 많지는 않지만 지속적인 Data변화를 받아오기엔 무리가 있다.
+   override fun onDataChange(DataSnapshot dataSnapshot) {
+        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+        
+        //데이터를 받아올때마다 실행되는 함수
+        
+        }
+    }
+
+    override fun onCancelled(DatabaseError databaseError) {
+       
+       
+       
+    }
+    
+    
+    
+    
+    -------------------------------------------------------------------------------------
+    
+    최종적으로 개발하고 있는 프로젝트에서 유저의 위치가 변경될때마다 그 위치를 받아와 POIitem(마커)을 생성 후 그 마커를 Map에 Add/ 찍어주는 코드이다.
+    
+    이때 POIitem의 위치만 바꾸는 방법이 없는지 찾아봤지만 찾을 수없었다.
+    Listview의 Adapter처럼 notifyonchanged같은 함수가 있으면 편할 것 같은데..
+    없어서 일일히 Update마다 삭제 후 같은 Data들의 MapPOIitem을 생성후 Add하고 있는 코드이다.
+    
+    database.getReference("PromiseRoom").child(PromiseRoom.roomId!!).child("Location").addChildEventListener(object: ChildEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+
+           }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                Log.d("wlgusdn111",p0.key)
+
+                nld = p0.getValue(NowLocationData::class.java)!!
+
+               for(i in 0..poi.size-1)
+               {
+                   if(poi[i].itemName == p0.key)
+                   {
+                       Log.d("wlgusdn111","Add")
+
+                       LobbyActivity.PromiseMap!!.removePOIItem(poi[i])
+                       poi[i].mapPoint = MapPoint.mapPointWithGeoCoord(nld.Lati!!,nld.Long!!)
+                       poi[i].markerType = net.daum.mf.map.api.MapPOIItem.MarkerType.CustomImage
+                       poi[i].isShowCalloutBalloonOnTouch=true
+                       poi[i].itemName = p0.key
+                       poi[i].customImageResourceId = R.drawable.cat
+                       poi[i].leftSideButtonResourceIdOnCalloutBalloon = R.drawable.cat
+                       LobbyActivity.PromiseMap!!.addPOIItem(poi[i])
+
+                   }
+               }
+
+
+
+                   /* if(lo.key!=AccountActivity.myname)
+                    {
+                        LobbyActivity.PromiseMap!!.removePOIItem(poi1)
+                        poi1.mapPoint= MapPoint.mapPointWithGeoCoord(lo.getValue(NowLocationData::class.java)!!.Lati!!,lo.getValue(NowLocationData::class.java)!!.Long!!)
+                        poi1.markerType = net.daum.mf.map.api.MapPOIItem.MarkerType.CustomImage
+                        poi1.isShowCalloutBalloonOnTouch=true
+                        poi1.itemName = lo.key
+                        poi1.customImageResourceId = R.drawable.cat
+                        poi1.leftSideButtonResourceIdOnCalloutBalloon = R.drawable.cat
+
+                        LobbyActivity.PromiseMap!!.addPOIItem(poi1)
+                    }*/
+
+
+
+
+
+
+           }
+
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+
+            }
+        })
+    
+    
