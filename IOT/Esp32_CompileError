@@ -1,0 +1,29 @@
+컴파일 시 
+
+1.
+network_platform.h:20:28: fatal error: mbedtls/config.h: No such file or directory
+
+이와 같은 에러 시 
+
+Arduino IDE의 환경 설정을 다시 구성한다.
+
+ex) Esp32 라이브러리 재다운 or 환경변수 추가 등등
+
+2.
+
+"AWS_IOT.h"를 위한 복수개의 라이브러리가 발견되었습니다
+ 사용됨: C:\Users\wlgusdn\Documents\Arduino\libraries\AWS_IOT
+"ArduinoJson.h"를 위한 복수개의 라이브러리가 발견되었습니다
+ 사용됨: C:\Users\wlgusdn\Documents\Arduino\libraries\ArduinoJson
+"DHT.h"를 위한 복수개의 라이브러리가 발견되었습니다
+ 사용됨: C:\Users\wlgusdn\Documents\Arduino\libraries\DHT
+exit status 1
+'WL_IDLE_STATUS' was not declared in this scope
+
+이와 같은 에러 시
+
+보통 ~\Documents\Arduino\libraries 에 추가된 라이브러리 외의
+다른 곳에 라이브러리들을 삭제 후 컴파일하면 정상 실행이 됐다.
+
+하지만 이후에 가끔씩 같은 에러가 나기도 한다...
+-> 이때는 알집으로 백업해뒀던 라이브러리를 삭제 후 다시 압축을 푸니 해결되었다.
