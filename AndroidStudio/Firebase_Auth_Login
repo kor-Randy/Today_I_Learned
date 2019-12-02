@@ -1,0 +1,100 @@
+자동 로그인을 하기 위해 
+
+auth=FirebaseAuth.getInstance() 와 
+auth.currentUser()를 Singleton 변수로 사용하여 모든 Fragment와 Activity에서 공유했지만
+
+App을 실행시킬 때에 처음에 (onStart(), onCreate()) 에서 내가 원하는(한번이상 로그인 했던 ex. Facebook 연동 로그인) user.uid와 달랐다.
+
+이번엔 순서가 틀렸지만,
+
+이유 불문하고 모든 경우의 수들을 시도했지만 안되는 걸 알았고, 후에 Firebase Documents와 Googling을 시작했다.
+
+이전에 Java에서 Google 연동 로그인으로 자동로그인을 구현했던 적이 있었다.
+
+auth!!.signInWithCredential(credential)
+이 코드를 보고 예전에 했었던 구글 자동로그인 코드가 기억이 났고 그것과 유사하단 것을 알았다
+
+
+
+btn_facebook_login!!.registerCallback(mCallbackManager,object : FacebookCallback<LoginResult> {
+
+            override fun onSuccess(result: LoginResult?) {
+                //페이스북 로그인 성공
+                editor!!.putString("face",result!!.accessToken.token)
+                editor!!.commit()
+                handleFacebookAccessToken(result?.accessToken)
+
+                Toast.makeText(this@LoginActivity,"로그인 성공",Toast.LENGTH_LONG).show()
+            }
+            override fun onCancel() {
+                //페이스북 로그인 취소
+                gogo(null)
+            }
+
+            override fun onError(error: FacebookException?) {
+                //페이스북 로그인 실패
+               gogo(null)
+            }
+        })
+이 코드로 로그인 버튼을 누를시에 Callback이 성공적으로 실행되면 result에 LoginResult객체가 생성
+그 객체의 token 값을 sf에 저장한다.
+왜냐하면 이후에 App을 실행했을 때 그 token값을 가지고 다시 facebook의 Auth에 접근해야하기 때문이다.
+
+ fun handleFacebookAccessToken(token : AccessToken?)
+    {
+        Log.d("kkaaoo", "handleFacebookAccessToken:$token")
+
+        if (token != null) {
+            val credential = FacebookAuthProvider.getCredential(token.token)
+            auth!!.signInWithCredential(credential)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("kkaaoo", "signInWithCredential:success")
+
+                            user = auth!!.currentUser
+                            gogo(auth!!.currentUser)
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("kkaaoo", "signInWithCredential:failure", task.exception)
+                           Toast.makeText(this@LoginActivity,"Authentication failed.",Toast.LENGTH_LONG).show()
+
+                            gogo(null)
+                        }
+                    }
+        }
+
+    }
+Facebook 로그인 버튼을 누르면 이 함수를 통해 token값을 갖고 Auth를 확인하며 성공시 UpdateUI()
+
+
+
+
+마지막으로 onStart() or onCreate() 초반부에 넣는 코드이다.
+
+ if(sf!!.getString("face",null)!=null) {
+
+            val credential = FacebookAuthProvider.getCredential(sf!!.getString("face",""))
+            auth!!.signInWithCredential(credential)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            user = auth!!.currentUser
+                            Log.d("kkaaoo", "signInWithCredential:success")
+
+                            gogo(user)
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("kkaaoo", "signInWithCredential:failure", task.exception)
+                            Toast.makeText(this@LoginActivity, "Authentication failed.", Toast.LENGTH_LONG).show()
+
+                            gogo(null)
+                        }
+                    }
+
+        }
+이 코드를 App을 실행하자마자 호출하여 SharedPreference에 저장되어 있는 token값을 가지고 Auth에 접근하여 그 user객체를 불러온다.
+
+Firebase는 다른 Cloud Service들보다 자료가 많으니 좀더 공부하기가 편하긴 하다.
+
+이후에는 Serverless로 구현한 KakaoLogin_Firebase 연동에서의 자동로그인을 해결해 볼 생각이다.
