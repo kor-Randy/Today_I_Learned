@@ -1,0 +1,316 @@
+처음에 내 노트북으로 node를 켜고 다른 노트북으로 내 local에 접속하여 node를 통해 MongoDB에 접근하는 API를 사용하려 했으나, 에러가 났고
+
+에러를 고치기 위해 Openssl? 무료로 할수있는 방법을 사용해봤으나 끝내 할 수 없어 Local에서의 통신을 하기로 했다.
+
+Mongeese를 사용하는 방법도 굉장히 많았고 나는 리눅스환경과 Web관련 언어에 익숙치 않은 탓인지 코드가 조금만 다르게 쓰여있어도 알지 못했다.
+
+예제로 실행하던 스키마(/models/test.js)이다
+var mongoose = require('mongoose');
+var tests_schema = new mongoose.Schema({
+    test: String
+  });
+
+  module.exports = mongoose.model('test',tests_schema);//tablename is account+s
+  
+  후에 회원가입을 할 때 회원정보를 담을 스키마(/models/account.js)이다
+  
+  var mongoose = require('mongoose');
+
+var accounts_schema = new mongoose.Schema({
+    id: String,
+    pass:String,
+    name:String,
+    phone:String,
+    email:String
+  });
+
+  module.exports = mongoose.model('account',accounts_schema);//tablename is account+s
+  
+  써봤던 noSQL과는 약간의 차이점이 있어 적응하기 어려웠다.
+  
+  회원가입(account)를 MongoDB에 접근하는 API (POST 방식 / GET 방식)들을 선언한 /routes/accounts.js 이다
+  
+  module.exports = function(app,Account)
+{
+  
+    //POST방식으로 객체 account를 save한다
+    //에러가 나면 result:0을 반환 
+    //나지 않으면 result:1을 반환
+    app.post('/api/accounts', function(req, res){
+        var account = new Account({
+            id : req.body.id,     
+            pass : req.body.pass,   
+            name : req.body.name , 
+            phone : req.body.phone,   
+            email : req.body.email   
+        });
+       
+
+        console.log("zzz"+account.id);
+        
+        account.save(function(err){
+            if(err){
+                console.error(err);
+                res.json({result: 0});
+                return;
+            }
+    
+ res.json({result: 1});
+    
+        });
+    });
+
+
+    //처음 사용해본 GET방식이다.
+    //따로 parameter를 지정해주지 않았기 때문에 account객체 모두를 Find한다
+    app.get('/api/accounts', function(req,res){
+        //전체검색
+        console.log(req.body.id);
+        Account.find(function(err, accounts){
+            if(err) return res.status(500).send({error: 'database failure'});
+            res.json(accounts);
+        })
+    });
+
+    //:id 자리에는 찾고싶은 id가 들어간다.
+    // Account.find({id:req.params.id}..를 통해 파라미터를 지정해 파라미터와 같은 Tuple을 Find한다
+   //http://localhost:3000/api/accounts/찾을 id <- 이 API를 사용
+   
+    app.get('/api/accounts/:id', function(req, res){
+        console.log(req.params.id);
+        Account.find({id:req.params.id},function(err, accounts){
+            console.log(accounts);
+            if(err) return res.status(500).json({error: err});
+            if(accounts.length === 0) return res.status(404).json({error: 'account not found'});
+            res.json(accounts);
+        })
+    });
+
+}
+
+
+위의 API를 사용하기 위해 자바스크립트를 사용해 구성한 html파일이다
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Processing</title>
+  <!-- Import our css styles -->
+</head>
+<body>
+  <div class="main">
+      <h2 class="main-header">Comment text analysys</h2>
+      <section class="main-input-comment">
+          <label for="comment">Write your comment here:</label>
+          <input type="text"
+                  name="id"
+                  id="id"
+                  placeholder="Your comment..."
+          >
+      </input>
+      <input type="text"
+                  name="pass"
+                  id="pass"
+                  placeholder="Your comment..."
+          >
+      </input>
+      <input type="text"
+                  name="name"
+                  id="name"
+                  placeholder="Your comment..."
+          >
+      </input>
+      <input type="text"
+                  name="phone"
+                  id="phone"
+                  placeholder="Your comment..."
+          >
+      </input>
+      <input type="text"
+                  name="email"
+                  id="email"
+                  placeholder="Your comment..."
+          >
+      </input>
+          <button class="main-analyze-button" onclick="AccountCreate()">Analyze...</button>
+          <br>
+          <input type="text"
+                  name="searchid"
+                  id="searchid"
+                  placeholder="Your comment..."
+          >
+      </input>
+          <button class="main-analyze-button" onclick="AccountSearch()">Searchid</button>
+         
+
+          <br><br>
+         <br>
+<input type="text"
+                  name="Noticename"
+                  id="Noticename"
+                  placeholder="Your comment..."
+          >
+      </input>
+      <textarea
+                  name="Noticedes"
+                  id="Noticedes"
+                  placeholder="Your comment..."
+          >
+      </textarea>
+      <input type="text"
+                  name="Noticeprice"
+                  id="Noticeprice"
+                  placeholder="Your comment..."
+          >
+      </input>
+          <button class="main-analyze-button" onclick="ThingCreate()">ThingCreate</button>
+          <br>
+          <input type="text"
+          name="noticename"
+          id="noticename"
+          placeholder="Your comment..."
+  >
+</input>
+  <button class="main-analyze-button" onclick="ThingSearch()">ThingSearch</button>
+           </section>
+      <section class="main-result">
+          <p id="main-result-block" class="main-result-block invisible">
+              <span>Result:</span>
+              <span id="result"></span>
+          </p>
+      </section>
+  </div>
+
+  <script> 
+    function AccountCreate() 
+    {//회원가입
+
+      const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://localhost:3000/api/accounts/');
+          xhr.setRequestHeader('Content-type', 'application/json');
+
+          xhr.onreadystatechange = function (e) 
+          {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            if(xhr.status === 201||xhr.status===200) 
+            { // 201: Created
+              console.log(xhr.responseText);
+            } 
+            else 
+            {
+              console.log("Error!"+xhr.status);
+            }
+          };
+
+          xhr.send(JSON.stringify({ 
+            "id":document.getElementById("id").value
+          ,"pass":document.getElementById("pass").value
+          ,"name":document.getElementById("name").value
+          ,"phone":document.getElementById("phone").value
+          ,"email":document.getElementById("email").value}));
+     
+          
+      
+
+    }
+
+    function AccountSearch()
+    {//찾고싶은 id값을 넣어 찾는다.
+    //이때 xhr.send를 꼭 해줘야한다.
+    //GET방식이라고 안해줬다가 고생했다.
+
+      console.log("account");
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://localhost:3000/api/accounts/'+document.getElementById("searchid").value);
+      xhr.setRequestHeader('Content-type', 'application/json');
+
+      xhr.onreadystatechange = function (e) 
+      {
+        if (xhr.readyState !== XMLHttpRequest.DONE) 
+          return;
+
+        if(xhr.status === 201||xhr.status===200) 
+        { // 201: Created
+          console.log(xhr.responseText);
+        } 
+        else 
+        {
+          console.log("Error!"+xhr.status);
+
+         
+        }
+      };
+      xhr.send(JSON.stringify({ 
+            "id":document.getElementById("id").value
+          }));
+    }
+
+
+
+  
+
+    function ThingCreate() 
+    {//회원가입
+
+      const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://localhost:3000/api/things/');
+          xhr.setRequestHeader('Content-type', 'application/json');
+
+          xhr.onreadystatechange = function (e) 
+          {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            if(xhr.status === 201||xhr.status===200) 
+            { // 201: Created
+              console.log(xhr.responseText);
+            } 
+            else 
+            {
+              console.log("Error!"+xhr.status);
+            }
+          };
+
+          xhr.send(JSON.stringify({ 
+            "name":document.getElementById("Noticename").value
+          ,"des":document.getElementById("Noticedes").value
+          ,"price":document.getElementById("Noticeprice").value}));
+     
+          
+      
+
+    }
+
+
+    function ThingSearch() {//제목검색
+      console.log("asdasd");
+      const xhr = new XMLHttpRequest();
+xhr.open('GET', 'http://localhost:3000/api/things/'+document.getElementById("noticename").value);
+xhr.setRequestHeader('Content-type', 'application/json');
+
+xhr.onreadystatechange = function (e) {
+  if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+  if(xhr.status === 201||xhr.status===200) { // 201: Created
+    console.log(xhr.responseText);
+  } else {
+    console.log("Error!"+xhr.status);
+  }
+};
+xhr.send(JSON.stringify({ 
+  "id":document.getElementById("noticename").value}));
+
+    }
+
+   
+</script>
+
+
+  <!-- Import axios library -->
+  <!-- Querystring library -->
+  
+</body>
+
+  
+  
+  
