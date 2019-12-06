@@ -1,0 +1,29 @@
+프로젝트를 계속해서 진행하던 중에
+
+startForeground(1, builder.build())로만 ForeGround를 알려주기 위한 Notification이 떳었는데
+
+다른 코드와 겹친건지 App의 Data변경 때문인지 며칠사이 안드로이드가 패치(?)를 한건지 모르겠다.
+
+Android Developer에서 코드를 다시 찾아 진행했다.
+
+바뀐 코드는
+
+startForeground(1, builder.build())에서
+->
+ with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+           
+            notify(1, builder.build())
+        }
+
+
+Noti를 종료할때는
+
+ with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            
+            cancel(1, builder.build())
+        }
+
+이러한 코드로 진행했다.
+
