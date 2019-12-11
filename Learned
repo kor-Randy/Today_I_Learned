@@ -22,3 +22,22 @@ onDestroy() : 화면이 finish()
 Fragment의 생명주기
 onCreateView() : 이곳에서 LayoutInflater로 UI작업 가능
 
+
+ManiFest
+앱의 이름, 버전, 구성요소, 권한 등 앱에서 꼭 필요한 정보를 저장하는 파일
+xml파일이며
+application태그, activity태그, service, reciever,permission 등등의 태그를 사용한다.
+
+
+안드로이드의 메모리구조
+1. RAM
+2. 내장메모리
+3. 외장메모리
+
+가비지 컬렉션
+-정리되지 않은 메모리, 유효하지 않은 메모리 주소를 갖는 Data를 정리
+-Stop the World : GC실행을 위해 JVM이 App 실행을 멈춘다. -> GC를 실행하는 Thread 외의 Thread는 멈춘다.
+
+
+
+
