@@ -1,0 +1,85 @@
+
+AWS의 기능중 App과 연결하여 DynamoDB, Storage, Cognito, Lambda 등의 Service를 쉽게 사용할 수 있게끔 도와주는 FrameWork이다.
+
+https://aws-amplify.github.io/docs/ 
+
+위의 링크를 따라 기본적으로 aws가입 한다.
+후에 CLI를 설치하여 Command에서 조작할 수 있는 환경을 조성한다.
+
+1.AMPLIFY를 설치
+
+$ npm install -g @aws-amplify/cli
+
+2. APP 설정
+Gradle : Project수준
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.amazonaws:aws-android-sdk-appsync-gradle-plugin:2.6.+'
+    }
+}
+
+apply plugin: 'com.amplifyframework.amplifytools'
+
+Gradle : App수준
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.amazonaws.appsync'
+android {
+    // ... typical items
+}
+dependencies {
+    // ... typical dependencies
+
+    implementation 'com.amazonaws:aws-android-sdk-appsync:2.6.+'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+}
+
+버전은 자주 바뀌니 AWS AMplify Documents를 통해 확인하길 바란다.
+
+이후에 App내에서 설정 or CLI로 설정 하는 2개의 방법이 있는 것 같은데
+
+나는 CLI로 설정했다.
+
+순서는 
+amplify init
+amplify <category> add/remove
+amplify push
+amplify pull
+
+1. cmd에서 project의 Directory로 이동한다.
+2. 'amplify init'으로 amplify를 초기화 한다.
+    ->이때 설정해야하는 값들이 나오는데
+     Choose your default editor: Visual Studio Code (or your favorite editor)
+    Please choose the type of app that you’re building: android
+    Where is your Res directory: (app/src/main/res): Press Enter to accept the default.
+    Do you want to use an AWS profile? Y
+    Please choose the profile you want to use: default
+    이런식으로 설정했다.
+      
+3. Amplify를 사용하는 주된 목적인 Appsync를 통한 GraphQL API를 설치한다.
+    'amplify add api'
+    -> 이떄 설정하는 값들
+    Please select from one of the above mentioned services: GraphQL
+    Provide API name: AmplifyAndroid
+    Choose an authorization type for the API: Amazon Cognito User Pool
+    Do you want to use the default authentication and security configuration? Yes, use the default configuration.
+    Do you have an annotated GraphQL schema? N
+    Do you want a guided schema creation? Y
+    What best describes your project: (e.g. “Todo” with ID, name, description)
+    Do you want to edit the schema now? (Y/n) Y
+
+이때 기본 Schema가 생성된다.
+
+
+
+
+
+
+
+
