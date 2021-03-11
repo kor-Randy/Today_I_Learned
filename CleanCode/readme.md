@@ -29,3 +29,9 @@
 - [클린코드(단위 테스트)](https://wlgusdn700.tistory.com/73)
 
 - [클린코드(클래스)](https://wlgusdn700.tistory.com/74)
+
+- [클린코드(시스템)](https://wlgusdn700.tistory.com/75)
+
+- [클린코드(창발성)](https://wlgusdn700.tistory.com/76)
+
+- [클린코드()](https://wlgusdn700.tistory.com/77)
