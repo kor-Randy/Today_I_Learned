@@ -12,3 +12,8 @@
 11. [모나드](https://wlgusdn700.tistory.com/42?category=913317)
 12. [서브스크립트](https://wlgusdn700.tistory.com/43?category=913317)
 13. [상속](https://wlgusdn700.tistory.com/44?category=913317)
+
+
+
+
+[Nested JSON Parsing / 길어지는 Decodable struct 코드 짧게 줄이기](https://wlgusdn700.tistory.com/79)
