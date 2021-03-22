@@ -8,3 +8,5 @@
 [UITableView 선택/삽입/삭제/이동 - 1](https://wlgusdn700.tistory.com/81)
 
 [ImageView - URL을 통한 이미지 로드 / KingFisher](https://wlgusdn700.tistory.com/57?category=909318)
+
+[AVPlayer Observe/Background](https://wlgusdn700.tistory.com/82)
