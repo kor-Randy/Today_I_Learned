@@ -10,3 +10,5 @@
 [ImageView - URL을 통한 이미지 로드 / KingFisher](https://wlgusdn700.tistory.com/57?category=909318)
 
 [AVPlayer Observe/Background](https://wlgusdn700.tistory.com/82)
+
+[MPNowPlayingInfoCenter/MPRemoteCommandCenter 를 통해 백그라운드 미디어 재생 관리](https://wlgusdn700.tistory.com/83)
