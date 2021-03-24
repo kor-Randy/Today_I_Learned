@@ -14,6 +14,6 @@
 13. [상속](https://wlgusdn700.tistory.com/44?category=913317)
 
 
-
+[Codable-CodingKey 을 이용해 JSON 파싱하기](https://wlgusdn700.tistory.com/50?category=913317)
 
 [Nested JSON Parsing / 길어지는 Decodable struct 코드 짧게 줄이기](https://wlgusdn700.tistory.com/79)
