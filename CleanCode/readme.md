@@ -34,4 +34,8 @@
 
 - [클린코드(창발성)](https://wlgusdn700.tistory.com/76)
 
-- [클린코드()](https://wlgusdn700.tistory.com/77)
+- [클린코드(동시성)](https://wlgusdn700.tistory.com/77)
+
+- [클린코드(점진적인 개선)](https://wlgusdn700.tistory.com/86)
+
+- [클린코드(냄새와 휴리스틱)](https://wlgusdn700.tistory.com/87?category=925730)
