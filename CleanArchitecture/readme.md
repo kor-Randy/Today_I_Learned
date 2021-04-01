@@ -14,3 +14,7 @@
 
 [클린 아키텍처(설계 원칙 - SRP) - 7](https://wlgusdn700.tistory.com/95)
 
+
+[클린 아키텍처(OCP - 개방 폐쇄 원칙) - 8](https://wlgusdn700.tistory.com/96)
+
+[클린 아키텍처(LSP - 리스코프 치환 원칙) - 9](https://wlgusdn700.tistory.com/97)
