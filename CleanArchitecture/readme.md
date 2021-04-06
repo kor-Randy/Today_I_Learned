@@ -22,4 +22,6 @@
 
 [클린 아키텍처(DIP - 의존성 역전 원칙) - 11](https://wlgusdn700.tistory.com/99)
 
+[클린 아키텍처(아키텍처란?) - 12](https://wlgusdn700.tistory.com/100)
 
+[클린 아키텍처(독립성) - 13](https://wlgusdn700.tistory.com/101)
