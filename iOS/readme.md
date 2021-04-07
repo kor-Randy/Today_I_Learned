@@ -14,3 +14,8 @@
 [AVPlayer Observe/Background](https://wlgusdn700.tistory.com/82)
 
 [MPNowPlayingInfoCenter/MPRemoteCommandCenter 를 통해 백그라운드 미디어 재생 관리](https://wlgusdn700.tistory.com/83)
+
+
+- - - -
+
+[Tabbar Slide Up/Down Animation](https://wlgusdn700.tistory.com/85?category=909318)
