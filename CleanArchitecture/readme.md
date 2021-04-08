@@ -25,3 +25,5 @@
 [클린 아키텍처(아키텍처란?) - 12](https://wlgusdn700.tistory.com/100)
 
 [클린 아키텍처(독립성) - 13](https://wlgusdn700.tistory.com/101)
+
+[클린 아키텍쳐(경계: 선 긋기) - 14](https://wlgusdn700.tistory.com/102)
